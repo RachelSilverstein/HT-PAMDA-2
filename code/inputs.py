@@ -1,5 +1,5 @@
 # REQUIRED ARGUMENTS
-RUN_NAME = 'new_pipeline_with_control_spacers_heatmap4.3'
+RUN_NAME = 'example_HT-PAMDA2'
 BARCODE_CSV = 'barcode_csv/example_barcodes.csv'
 FASTQ_DIR = 'fastqs/example_PAMDA_data'
 TIMEPOINT_FASTQ = {

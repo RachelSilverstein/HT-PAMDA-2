@@ -18,23 +18,25 @@ HT-PAMDA is used to comprehensively profile the protospacer-adjacent motif (PAM)
 
 Download the repository (on Github use the green "Clone or download" button and select "Download Zip"). Expand the zip file in a convenient location.
 
-In Terminal, go to the repository directory and create a Python 3 virtual environment:
+In Terminal, go to the repository directory and create a Python 3 virtual environment. We suggest using python 3.8.2 or installation of requirements in install.sh may cause errors.
 
 ```
 python3 -m venv venv
 ```
 
-This will create a virtual environment called `venv`. Next, the commands in `install.sh` will add the required packages to the `venv` virtual environment. The installation should take no more than a few minutes.
-
-```
-sh install.sh
-```
-
-The required dependencies are now installed to the virtual environment. Activate the virtual environment:
+This will create a virtual environment called `venv`. 
+Activate the virtual environment:
 
 ```
 source venv/bin/activate
 ```
+
+Next, the commands in `install.sh` will add the required packages to the `venv` virtual environment. The installation should take no more than a few minutes.
+```
+sh install.sh
+```
+
+The required dependencies are now installed to the virtual environment.
 
 Perform all steps of the analysis within this virtual environment.
 
