@@ -1,28 +1,45 @@
 # REQUIRED ARGUMENTS
-RUN_NAME = 'example_PAMDA_data'
-BARCODE_CSV = 'barcode_csv/example_PAMDA_barcodes.csv'
+RUN_NAME = 'new_pipeline_with_control_spacers_heatmap4.3'
+BARCODE_CSV = 'barcode_csv/example_barcodes.csv'
 FASTQ_DIR = 'fastqs/example_PAMDA_data'
 TIMEPOINT_FASTQ = {
-                   'expRW086_pool_10_S10': 0,
-                   'expRW086_pool_11_S11': 1, 
-                   'expRW086_pool_12_S12': 2
+                   'example_expNK24_plate1_TP1': 0,
+                   'example_expNK24_plate1_TP2': 1,
+                   'example_expNK24_plate1_TP3': 2
                   }
 PAM_ORIENTATION = 'three_prime' # or 'five_prime'
 PAM_LENGTH = 4
 PAM_START = 0
-CONTROL_RAW_COUNT_CSV = 'output/example_PAM_library/PAMDA_1_raw_counts.csv.gz'
-CONTROL_SAMPLE = 'control_sample'
+CONTROL_RAW_COUNT_CSV = "output/example_PAM_library_with_control_spacers/PAMDA_1_raw_counts.csv.gz"
+CONTROL_SAMPLE = 'expNK24_plate1_sample4' # description from the PAM_library_barcodes.csv file
 
-# ADDITIONAL ARGUMENTS (with default values entered)
+# ADDITIONAL ARGUMENTS (with default arguments entered)
 CONTROL_SAMPLE_TIMEPOINT_FASTQ = None
 TIMEPOINTS = [0, 60, 480, 1920]
 MAX_PAM_LENGTH = 8
-SPACERS = {'SPACER1':'GGGCACGGGCAGCTTGCCGG', 
-           'SPACER2':'GTCGCCCTCGAACTTCACCT'}
+SPACERS = {'SPACER01': 'GGGCACGGGCAGCTTGCCGG',  # RTW554
+           'SPACER02': 'GTCGCCCTCGAACTTCACCT'}  # RTW555
+
+#CONTROL_SPACERS = None
+#CONTROL_SPACER_MAPPING = None
+
+CONTROL_SPACERS = {'SPACER03': "GTCACCTCCAATGACTAGGG",
+                   'SPACER04': "GAAATGAACTAGAAAGAAAT",
+                   'SPACER05': "GAGACGTTCATGACTGGCAT",
+                   'SPACER06': "GCTTTGCTACAACCCCAGCA",
+                   'SPACER08': "GAAGCGGAGCGTCCCGCCAG",
+                   'SPACER09': "GGGTGGTTCCATAATCTGTG",
+                   'SPACER10': "GCTGGGTGAATGGAGCGAGC",
+                   'SPACER11': "GCAGAAGGGATTCCATGAGG",
+                   'SPACER12': "GCAGACGGCAGTCACTAGGG"}
+
+CONTROL_SPACER_MAPPING = {'SPACER01': ["SPACER03", "SPACER04", "SPACER05", "SPACER06"],
+                          'SPACER02': ["SPACER08", "SPACER09", "SPACER10", "SPACER11", "SPACER12"]}
+
 P5_SAMPLE_BARCODE_START = 2
 P7_SAMPLE_BARCODE_START = 2
 USE_TIMEPOINTS = None
-TOP_N_NORMALIZE = 5
+TOP_N_NORMALIZE = 4
 INIT_RATE_EST = [0.0001, 0.001, 0.01]
 READ_SUM_MIN = 4
 TPS_SUM_MIN = 1
@@ -31,7 +48,7 @@ PAM2_NT_RANK = {1:'A',2:'C',3:'G',4:'T'}
 PAM1_INDEX_RANK = None
 PAM2_INDEX_RANK = None
 AVERAGE_SPACER = True
-HEATMAP_FIXED_MIN = -5.0
+HEATMAP_FIXED_MIN = -4.3
 HEATMAP_FIXED_MAX = -1.5
 LOG_SCALE_HEATMAP = True
 CSV_INPUT_RAW_COUNT = None

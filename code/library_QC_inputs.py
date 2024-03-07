@@ -1,16 +1,27 @@
 # REQUIRED ARGUMENTS
-RUN_NAME = 'example_PAM_library'
+RUN_NAME = 'example_PAM_library_no_control_spacers'
 CONTROL_BARCODE_CSV = 'barcode_csv/example_PAM_library_barcodes.csv'
 CONTROL_FASTQ_DIR = 'fastqs/example_PAM_library'
-CONTROL_FASTQ = 'expRW086_pool_03_S3'
+CONTROL_FASTQ = 'expNK24_library'
 PAM_ORIENTATION = 'three_prime' # or 'five_prime'
 PAM_LENGTH = 4
 PAM_START = 0
 
 # ADDITIONAL ARGUMENTS (with default values entered)
 MAX_PAM_LENGTH = 8
-SPACERS = {'SPACER1':'GGGCACGGGCAGCTTGCCGG', 
-           'SPACER2':'GTCGCCCTCGAACTTCACCT'}
+SPACERS = {'SPACER01':'GGGCACGGGCAGCTTGCCGG',
+           'SPACER02':'GTCGCCCTCGAACTTCACCT'}
+
+CONTROL_SPACERS = None
+# CONTROL_SPACERS = {'SPACER03': "GTCACCTCCAATGACTAGGG",
+#                    'SPACER04': "GAAATGAACTAGAAAGAAAT",
+#                    'SPACER05': "GAGACGTTCATGACTGGCAT",
+#                    'SPACER06': "GCTTTGCTACAACCCCAGCA",
+#                    'SPACER08': "GAAGCGGAGCGTCCCGCCAG",
+#                    'SPACER09': "GGGTGGTTCCATAATCTGTG",
+#                    'SPACER10': "GCTGGGTGAATGGAGCGAGC",
+#                    'SPACER11': "GCAGAAGGGATTCCATGAGG",
+#                    'SPACER12': "GCAGACGGCAGTCACTAGGG"}
 P5_SAMPLE_BARCODE_START = 2
 P7_SAMPLE_BARCODE_START = 2
 
