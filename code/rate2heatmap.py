@@ -28,7 +28,8 @@ def rate2heatmap(run_name,
                  heatmap_fixed_max=False,
                  log_scale_heatmap=True,
                  input_csv=None,
-                 control_spacers=None):
+                 control_spacers=None,
+                 low_rates_correct=10**-5):
     """
     generate a heatmap representation of PAM preference
     """
@@ -37,9 +38,6 @@ def rate2heatmap(run_name,
         csv_input = 'output/%s/PAM_start_%s_length_%s/PAMDA_3_rates.csv' % (run_name, pam_start, pam_length)
     else:
         csv_input = input_csv
-
-
-
 
     plt.switch_backend('agg')
 
@@ -59,6 +57,10 @@ def rate2heatmap(run_name,
         df_input = df_input.loc[ind, :]
         df_input.reset_index(inplace=True)
 
+    # Set very low rate constants to 10^-5 so they don't pull down the average
+
+    df_input["Rate_Constant_k"] = np.maximum(df_input["Rate_Constant_k"], low_rates_correct)
+    print(df_input["Rate_Constant_k"])
     if (pam1_index_rank == None or pam2_index_rank == None):
         # if not specified, split PAM in the middle for x and y-axis
         # default ordering is higher priority for "inner" bases of the PAM
