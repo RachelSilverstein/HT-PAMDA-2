@@ -58,7 +58,6 @@ def rate2heatmap(run_name,
 
     # Set very low rate constants to heatmap min so they don't pull down the average
     df_input["Rate_Constant_k"] = np.maximum(df_input["Rate_Constant_k"], heatmap_fixed_min)
-    print(df_input["Rate_Constant_k"])
 
     if (pam1_index_rank == None or pam2_index_rank == None):
         # if not specified, split PAM in the middle for x and y-axis
