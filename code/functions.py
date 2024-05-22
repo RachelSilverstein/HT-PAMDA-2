@@ -158,8 +158,8 @@ def add_t0_raw_counts(input_df, control_sample, control_sample_timepoint_fastq):
         sample_spacers = output_df.loc[output_df["Sample"] == sample_name, "Spacer"]
         sample_pams = output_df.loc[output_df["Sample"] == sample_name, "PAM"]
         assert(len(sample_spacers) == len(control_spacers)), "The following sample contains a different number of spacers than the control sample: " + sample_name
-        assert all(np.equal(sample_pams.values, control_pams.values)), "The following sample contains a spacer that was not found in control: " + sample_name
-        assert all(np.equal(sample_spacers.values, control_spacers.values)), "The following sample contains a PAM that was not found in control: " + sample_name
+        assert all(np.equal(sample_pams.values, control_pams.values)), "Sample spacers do not match control spacers for this sample: " + sample_name
+        assert all(np.equal(sample_spacers.values, control_spacers.values)), "Sample PAMs do not match control PAMS for this sample: " + sample_name
 
     # separate the control from the rest of the dataframe
     control_df = output_df.loc[output_df["Sample"] == control_sample, :]
