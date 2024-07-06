@@ -71,7 +71,7 @@ def rawcount2normcount(run_name,
 
 
     # add t0 read counts to each sample from control sample
-    df_input = add_t0_raw_counts(df_input, control_sample, control_sample_timepoint_fastq)
+    df_input = add_t0_raw_counts(df_input, control_sample, control_sample_timepoint_fastq, timepoints)
 
     # add fractional counts for each sample/spacer combo
     df_input = add_fractional_counts(df_input, timepoints)

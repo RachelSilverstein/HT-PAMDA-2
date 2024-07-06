@@ -145,7 +145,7 @@ def group_pams(input_df, pam_start, pam_length, max_pam_length, pam_orientation,
     output_df.reset_index(drop=True)
     return output_df
 
-def add_t0_raw_counts(input_df, control_sample, control_sample_timepoint_fastq):
+def add_t0_raw_counts(input_df, control_sample, control_sample_timepoint_fastq, timepoints):
     """Convert the control sample raw counts to t0 raw counts for each sample"""
     # make a copy
     output_df = input_df.copy(deep=True)
@@ -170,7 +170,9 @@ def add_t0_raw_counts(input_df, control_sample, control_sample_timepoint_fastq):
     control_counts = [control_counts for _ in range(len(sample_names)-1)]
     control_counts = np.concatenate(control_counts)
     output_df["Raw_Counts_0"] = control_counts
-    output_df = output_df.reindex(columns=["Sample", "Spacer", "PAM", "Raw_Counts_0", "Raw_Counts_1", "Raw_Counts_2", "Raw_Counts_3"])
+    raw_count_colnames = ["Raw_Counts_" + str(i) for i in range(len(timepoints))]
+    colnames = ["Sample", "Spacer", "PAM"].extend(raw_count_colnames)
+    output_df = output_df.reindex(columns=colnames)
     return output_df
 
 
