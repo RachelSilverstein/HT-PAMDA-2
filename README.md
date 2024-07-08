@@ -4,15 +4,28 @@
 </a>
 </p>
 
-<h1 align="center"> High-Throughput PAM Determination Assay (HT-PAMDA)</h1>
+<h1 align="center"> High-Throughput PAM Determination Assay 2 (HT-PAMDA-2)</h1>
 
 # Overview
 
-HT-PAMDA is used to comprehensively profile the protospacer-adjacent motif (PAM) preferences of CRISPR-Cas nucleases. This repository contains code to perform analysis of data that has been generated using the HT-PAMDA method as described in [Walton et al. (Science, 2020)](https://science.sciencemag.org/content/368/6488/290).
+Updated version of HT-PAMDA software. HT-PAMDA is used to comprehensively profile the protospacer-adjacent motif (PAM) preferences of CRISPR-Cas nucleases. This repository contains code to perform analysis of data that has been generated using the HT-PAMDA method as described in [Walton et al. (Science, 2020)](https://science.sciencemag.org/content/368/6488/290).
 
-|SpCas9|SpRY |
-|:----:|:---:|
-|<img src="https://github.com/kleinstiverlab/HT-PAMDA/blob/master/figures/github_example_figures/PAMDA_HEATMAP_sample_01_WT_SpCas9.png" alt="PAM preference of SpCas9" width="450"/>|<img src="https://github.com/kleinstiverlab/HT-PAMDA/blob/master/figures/github_example_figures/PAMDA_HEATMAP_sample_03_SpRY.png" alt="PAM preference of SpRY" width="450"/>|
+## New in version 2
+
+HT-PAMDA-2 analysis software has better compatibility with 'relaxed' PAM variants such as SpRY:
+1. Correction of "uptrends" in read counts of uncleaved PAMs at later timepoints.
+2. Option to normalize reads to control substrates added to PAM library (uncleavable spacers) instead of least cleaved PAMs.
+
+
+|                             SpCas9 - Version 1                             |                            SpRY - Version 1                            |
+|:--------------------------------------------------------------------------:|:----------------------------------------------------------------------:|
+| ![](figures/github_example_figures/SpCas9_version1.pdf "SpCas9 Version 2") | ![](figures/github_example_figures/SpRY_version1.pdf "SpRY Version 2") |                                                                                                                                                                               |
+
+
+|                             SpCas9 - Version 2                             |                            SpRY - Version 2                            |
+|:--------------------------------------------------------------------------:|:----------------------------------------------------------------------:|
+| ![](figures/github_example_figures/SpCas9_version2.pdf "SpCas9 Version 2") | ![](figures/github_example_figures/SpRY_version2.pdf "SpRY Version 2") |                                                                                                                                                                               |
+
 
 ## Installation
 
@@ -52,7 +65,8 @@ The repository has the following folder structure:
 # Analysis
 
 There are two main sections of the analysis:
-1) **Randomized PAM library quality control**: Assess the distribution of PAM sequences in an untreated randomized library control.
+1) **Randomized PAM library quality control**: Assess the distribution of PAM sequences in an untreated randomized library control. 
+This step is optional; if the uncleaved library is pooled together with a timepoint library then you can proceed to step 2.
 2) **HT-PAMDA data analysis**: Analyze HT-PAMDA data to define PAM preferences of CRISPR-Cas nucleases.
 
 Example data has been provided to run both sections of the analysis.
@@ -146,7 +160,22 @@ Examples:
 `MAX_PAM_LENGTH`: Integer. The maximum PAM length that will be considered, starting immediately adjacent to the spacer. PAMs of this length will be enumerated from fastq files. PAMs will later be truncated to the bases indicated by `PAM_START` and `PAM_LENGTH`. Default value is `8`. 
 
 `SPACERS`: Dictionary with key = spacer name, value = spacer sequence. Default spacers: `{'SPACER1':'GGGCACGGGCAGCTTGCCGG', 'SPACER2':'GTCGCCCTCGAACTTCACCT'}`
-           
+ 
+`CONTROL_SPACERS`: NEW in verion 2. Dictionary with key = spacer name, value = spacer sequence *or* `None`. Designates spacers spiked into PAM library without a matching gRNA. Used as uncleavable control substrates to which read counts for each PAM will be normalized. Naming of control spacers should be distinct form
+ SPACERS parameter. To *not* use control spacers, set this parameter to `None`, and reads will instead be normalized to the least cleaved PAMs within the library as in version 1. Default control spacers:
+
+```
+CONTROL_SPACERS = {'SPACER03': "GTCACCTCCAATGACTAGGG",
+                   'SPACER04': "GAAATGAACTAGAAAGAAAT",
+                   'SPACER05': "GAGACGTTCATGACTGGCAT",
+                   'SPACER06': "GCTTTGCTACAACCCCAGCA",
+                   'SPACER08': "GAAGCGGAGCGTCCCGCCAG",
+                   'SPACER09': "GGGTGGTTCCATAATCTGTG",
+                   'SPACER10': "GCTGGGTGAATGGAGCGAGC",
+                   'SPACER11': "GCAGAAGGGATTCCATGAGG",
+                   'SPACER12': "GCAGACGGCAGTCACTAGGG"}
+```
+          
 `P5_SAMPLE_BARCODE_START`: Integer, location of the 5' end of the P5 sample barcode. Default = `2`.
         
 `P7_SAMPLE_BARCODE_START`: Integer, location of the 5' end of the P7 sample barcode. Default = `2`.
@@ -315,7 +344,31 @@ Examples:
 *The following parameters should be changed if target site design, amplicon design, or library preparation were altered from those used in Walton et al. (Science, 2020).*
 
 `SPACERS`: Dictionary with key = spacer name, value = spacer sequence. Default spacers: `{'SPACER1':'GGGCACGGGCAGCTTGCCGG', 'SPACER2':'GTCGCCCTCGAACTTCACCT'}`
-           
+ 
+`CONTROL_SPACERS`: NEW in verion 2. Dictionary with key = spacer name, value = spacer sequence *or* `None`. Designates spacers spiked into PAM library without a matching gRNA. Used as uncleavable control substrates to which read counts for each PAM will be normalized. Naming of control spacers should be distinct form
+ SPACERS parameter. To *not* use control spacers, set this parameter to `None`, and reads will instead be normalized to the least cleaved PAMs within the library as in version 1. Default control spacers:
+
+```
+CONTROL_SPACERS = {'SPACER03': "GTCACCTCCAATGACTAGGG",
+                   'SPACER04': "GAAATGAACTAGAAAGAAAT",
+                   'SPACER05': "GAGACGTTCATGACTGGCAT",
+                   'SPACER06': "GCTTTGCTACAACCCCAGCA",
+                   'SPACER08': "GAAGCGGAGCGTCCCGCCAG",
+                   'SPACER09': "GGGTGGTTCCATAATCTGTG",
+                   'SPACER10': "GCTGGGTGAATGGAGCGAGC",
+                   'SPACER11': "GCAGAAGGGATTCCATGAGG",
+                   'SPACER12': "GCAGACGGCAGTCACTAGGG"}
+```
+                   
+`CONTROL_SPACER_MAPPING`: NEW in version 2. Dictionary with key = spacer name, value = list of control spacer names. Designates
+which control spacers are spiked into which library. Spacers spiked into different libraries must be distinct for demultiplexing purposes.
+If control spacers were not use, set this parameter to `None`. Default control spacer mapping:
+
+```
+CONTROL_SPACER_MAPPING = {'SPACER01': ["SPACER03", "SPACER04", "SPACER05", "SPACER06"],
+                          'SPACER02': ["SPACER08", "SPACER09", "SPACER10", "SPACER11", "SPACER12"]}
+```
+          
 `P5_SAMPLE_BARCODE_START`: Integer, location of the 5' end of the P5 sample barcode. Default = `2`.
         
 `P7_SAMPLE_BARCODE_START`: Integer, location of the 5' end of the P7 sample barcode. Default = `2`.
@@ -359,6 +412,6 @@ Example P5 and P7 barcodes in an example amplicon for a 3' PAM library below. Ba
 
 `HEATMAP_FIXED_MIN`: Minimum value of heatmap. Default is `-1.5` (log scale). Set to `False` to automatically choose the minimum value for each sample from rate values.
 
-`HEATMAP_FIXED_MAX`: Maximum value of heatmap. Default is `-5.0` (log scale). Set to `False` to automatically choose the maximum value for each sample from rate values.
+`HEATMAP_FIXED_MAX`: Maximum value of heatmap. Default is `-4.3` (log scale). Set to `False` to automatically choose the maximum value for each sample from rate values.
 
 `LOG_SCALE_HEATMAP`: Plot log10(rates) or rates. `True` or `False`. Default `True` plots log10(rates).
