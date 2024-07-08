@@ -170,8 +170,9 @@ def add_t0_raw_counts(input_df, control_sample, control_sample_timepoint_fastq, 
     control_counts = [control_counts for _ in range(len(sample_names)-1)]
     control_counts = np.concatenate(control_counts)
     output_df["Raw_Counts_0"] = control_counts
-    raw_count_colnames = ["Raw_Counts_" + str(i) for i in range(len(timepoints) + 1)]
-    colnames = ["Sample", "Spacer", "PAM"].extend(raw_count_colnames)
+    raw_count_colnames = ["Raw_Counts_" + str(i) for i in range(len(timepoints))]
+    colnames = ["Sample", "Spacer", "PAM"]
+    colnames.extend(raw_count_colnames)
     output_df = output_df.reindex(columns=colnames)
     return output_df
 
