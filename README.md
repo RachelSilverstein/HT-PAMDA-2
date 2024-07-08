@@ -17,15 +17,15 @@ HT-PAMDA-2 analysis software has better compatibility with 'relaxed' PAM variant
 2. Option to normalize reads to control substrates added to PAM library (uncleavable spacers) instead of least cleaved PAMs.
 
 
-|                                      SpCas9 - Version 1                                       |                               SpRY - Version 1                               |
-|:---------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------:|
-|   <img src="./figures/github_example_figures/SpCas9_version1.pdf" alt="Image" width="450"/>   | <img src="./figures/github_example_figures/SpRY_version1.pdf" width="450" /> |                                                                                                                                                                               |
+|                                                             SpCas9 - Version 1                                                              |                               SpRY - Version 1                               |
+|:-------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------:|
+|   <img src="https://github.com/RachelSilverstein/HT-PAMDA-2/blob/master/figures/github_example_figures/SpCas9_version1.pdf" width="450"/>   | <img src="https://github.com/RachelSilverstein/HT-PAMDA-2/blob/master/figures/github_example_figures/SpRY_version1.pdf" width="450" /> |                                                                                                                                                                               |
 
 
 
 |                              SpCas9 - Version 2                               |                               SpRY - Version 2                               |
 |:-----------------------------------------------------------------------------:|:----------------------------------------------------------------------------:|
-| <img src="./figures/github_example_figures/SpCas9_version2.pdf" width="450"/> | <img src="./figures/github_example_figures/SpRY_version2.pdf" width="450" /> |                                                                                                                                                                               |
+| <img src="https://github.com/RachelSilverstein/HT-PAMDA-2/blob/master/figures/github_example_figures/SpCas9_version2.pdf" width="450"/> | <img src="https://github.com/RachelSilverstein/HT-PAMDA-2/blob/master/figures/github_example_figures/SpRY_version2.pdf" width="450" /> |                                                                                                                                                                               |
 
 
 ## Installation
