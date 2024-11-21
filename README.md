@@ -30,6 +30,8 @@ HT-PAMDA-2 analysis software has better compatibility with 'relaxed' PAM variant
 
 ## Installation
 
+Requires Python 3.11.5
+
 Download the repository (on Github use the green "Clone or download" button and select "Download Zip"). Expand the zip file in a convenient location.
 
 In Terminal, go to the repository directory and create a Python 3 virtual environment. We suggest using python 3.8.2 or installation of requirements in install.sh may cause errors.
