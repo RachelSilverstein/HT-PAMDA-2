@@ -71,7 +71,7 @@ def rawcount2normcount(run_name,
 
 
     # add t0 read counts to each sample from control sample
-    df_input = add_t0_raw_counts(df_input, control_sample, control_sample_timepoint_fastq, timepoints)
+    df_input = add_t0_raw_counts(df_input, control_sample, control_sample_timepoint_fastq, timepoints, spacers, control_spacers)
 
     # add fractional counts for each sample/spacer combo
     df_input = add_fractional_counts(df_input, timepoints)
@@ -79,7 +79,7 @@ def rawcount2normcount(run_name,
     # choose control PAMs for each sample (most enriched ones or designated control spacers)
     # correct for increased counts in later timepoints
     if top_n > 0: # do not perform uptrend corrections if the top n is set to 0
-        df_input = correct_uptrends(df_input, control_spacers, timepoints, run_name, pam_start, pam_length, top_n)
+        df_input = correct_uptrends(df_input, spacers, control_spacers, timepoints, run_name, pam_start, pam_length, top_n)
 
     # normalizing read counts
     df_input = norm_to_t0_abundance(df_input, timepoints)

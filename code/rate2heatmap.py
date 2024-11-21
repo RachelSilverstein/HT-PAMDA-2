@@ -19,6 +19,7 @@ def rate2heatmap(run_name,
                  barcode_csv,
                  pam_length,
                  pam_start,
+                 spacers,
                  pam1_nucleotide_rank={1: 'A', 2: 'C', 3: 'G', 4: 'T'},
                  pam2_nucleotide_rank={1: 'A', 2: 'C', 3: 'G', 4: 'T'},
                  pam1_index_rank=None,
@@ -71,7 +72,7 @@ def rate2heatmap(run_name,
     df_input['PAM_pt1'] = [x[:split_pam_index] for x in df_input['PAM'].tolist()]
     df_input['PAM_pt2'] = [x[split_pam_index:] for x in df_input['PAM'].tolist()]
 
-    spacers = df_input['Spacer'].unique().tolist()
+    spacers = list(spacers.keys())
 
     pam_length = len(df_input['PAM'].tolist()[0])
 
@@ -207,6 +208,7 @@ if __name__ == "__main__":
                  BARCODE_CSV,
                  PAM_LENGTH,
                  PAM_START,
+                 SPACERS,
                  PAM1_NT_RANK,
                  PAM2_NT_RANK,
                  PAM1_INDEX_RANK,

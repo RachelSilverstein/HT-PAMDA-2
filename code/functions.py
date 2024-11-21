@@ -145,25 +145,31 @@ def group_pams(input_df, pam_start, pam_length, max_pam_length, pam_orientation,
     output_df.reset_index(drop=True)
     return output_df
 
-def add_t0_raw_counts(input_df, control_sample, control_sample_timepoint_fastq, timepoints):
+def add_t0_raw_counts(input_df, control_sample, control_sample_timepoint_fastq, timepoints, spacers, control_spacers):
     """Convert the control sample raw counts to t0 raw counts for each sample"""
     # make a copy
     output_df = input_df.copy(deep=True)
 
+    # REMOVE any spacers that are not present in the inputs file
+    all_spacer_names = list(spacers.keys())
+    if control_spacers is not None:
+        all_spacer_names.extend(list(control_spacers.keys()))
+    output_df = output_df[output_df["Spacer"].isin(all_spacer_names)]
+
     # make sure the order of the spacers and PAMs is the same between the control samples and the other samples
     sample_names = pd.unique(output_df["Sample"])
-    control_spacers = output_df.loc[output_df["Sample"] == control_sample, "Spacer"]
-    control_pams = output_df.loc[output_df["Sample"] == control_sample, "PAM"]
+    control_sample_spacers = output_df.loc[output_df["Sample"] == control_sample, "Spacer"]
+    control_sample_pams = output_df.loc[output_df["Sample"] == control_sample, "PAM"]
     for sample_name in sample_names:
         sample_spacers = output_df.loc[output_df["Sample"] == sample_name, "Spacer"]
         sample_pams = output_df.loc[output_df["Sample"] == sample_name, "PAM"]
-        assert(len(sample_spacers) == len(control_spacers)), "The following sample contains a different number of spacers than the control sample: " + sample_name
-        assert all(np.equal(sample_pams.values, control_pams.values)), "Sample spacers do not match control spacers for this sample: " + sample_name
-        assert all(np.equal(sample_spacers.values, control_spacers.values)), "Sample PAMs do not match control PAMS for this sample: " + sample_name
+        assert(len(sample_spacers) == len(control_sample_spacers)), "The following sample contains a different number of spacers than the control sample: " + sample_name
+        assert all(np.equal(sample_pams.values, control_sample_pams.values)), "Sample spacers do not match control spacers for this sample: " + sample_name
+        assert all(np.equal(sample_spacers.values, control_sample_spacers.values)), "Sample PAMs do not match control PAMS for this sample: " + sample_name
 
     # separate the control from the rest of the dataframe
-    control_df = output_df.loc[output_df["Sample"] == control_sample, :]
-    output_df = output_df.loc[output_df["Sample"] != control_sample, :]
+    control_df = output_df[output_df["Sample"] == control_sample]
+    output_df = output_df[output_df["Sample"] != control_sample]
 
     # make the control counts the t0 counts for each sample
     control_counts = control_df["Raw_Counts_" + str(control_sample_timepoint_fastq)].values
@@ -211,11 +217,12 @@ def add_fractional_counts(input_df, timepoints):
     return output_df
 
 
-def make_control_df(input_df, timepoints, top_n):
+def make_control_df(input_df, spacers, timepoints, top_n):
     """Choose the top n rows of the dataframe with largest uptrends to use as controls"""
 
     input_df = input_df.copy(deep=True)
-    print("choosing control samples")
+
+    print("choosing control PAMs")
 
     # initialize new columns
     input_df["slopes"] = np.zeros(len(input_df))
@@ -243,7 +250,7 @@ def make_control_df(input_df, timepoints, top_n):
     return control_df
 
 
-def correct_uptrends(input_df, control_spacers, timepoints, run_name, pam_start, pam_length, top_n):
+def correct_uptrends(input_df, spacers, control_spacers, timepoints, run_name, pam_start, pam_length, top_n):
     """Correct later timepoints when control samples trend upwards"""
     # make a copy
     output_df = input_df.copy(deep=True)
@@ -251,13 +258,14 @@ def correct_uptrends(input_df, control_spacers, timepoints, run_name, pam_start,
     # df of just the control spacers so that we can calculate the increases for these
     if control_spacers is not None:
         sel = np.isin(output_df["PAM"], list(control_spacers.keys()))
-        control_df = output_df.loc[sel, :]
+        control_df = output_df.loc[sel, :].copy(deep=True) # copy to avoid setting values on slice warnings
+
     else:
-        control_df = make_control_df(input_df, timepoints, top_n)
+        control_df = make_control_df(input_df, spacers, timepoints, top_n) # choose least cleaved PAMs to use as controls
 
     if not os.path.exists('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length)):
         os.makedirs('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length))
-    control_df.to_csv('output/%s/PAM_start_%s_length_%s/control_sample_slopes.csv' %
+    control_df.to_csv('output/%s/PAM_start_%s_length_%s/control_targets.csv' %
                                (run_name, pam_start, pam_length), index=True)
 
     print("normalizing read counts")
@@ -266,7 +274,7 @@ def correct_uptrends(input_df, control_spacers, timepoints, run_name, pam_start,
     correction_colnames = []
     for i in range(len(timepoints)):
         new = "Correction_Factor_" + str(i)
-        control_df[new] = np.zeros(len(control_df))
+        control_df.loc[:, new] = np.zeros(len(control_df))
         correction_colnames.append(new)
 
     fract_column_names = []
