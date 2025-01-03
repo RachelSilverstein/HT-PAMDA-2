@@ -20,6 +20,7 @@ def rate2heatmap(run_name,
                  pam_length,
                  pam_start,
                  spacers,
+                 control_spacers,
                  pam1_nucleotide_rank={1: 'A', 2: 'C', 3: 'G', 4: 'T'},
                  pam2_nucleotide_rank={1: 'A', 2: 'C', 3: 'G', 4: 'T'},
                  pam1_index_rank=None,
@@ -28,8 +29,7 @@ def rate2heatmap(run_name,
                  heatmap_fixed_min=False,
                  heatmap_fixed_max=False,
                  log_scale_heatmap=True,
-                 input_csv=None,
-                 control_spacers=None):
+                 input_csv=None):
     """
     generate a heatmap representation of PAM preference
     """
@@ -204,17 +204,21 @@ if __name__ == "__main__":
                  LOG_SCALE_HEATMAP)
 
     # generate heatmap representations of PAM preference from rates
+    print("CONTROL SPACERS in rate2heatmap:", CONTROL_SPACERS)  # delete later
     rate2heatmap(RUN_NAME,
                  BARCODE_CSV,
                  PAM_LENGTH,
                  PAM_START,
                  SPACERS,
-                 PAM1_NT_RANK,
-                 PAM2_NT_RANK,
-                 PAM1_INDEX_RANK,
-                 PAM2_INDEX_RANK,
-                 AVERAGE_SPACER,
-                 HEATMAP_FIXED_MIN,
-                 HEATMAP_FIXED_MAX,
-                 LOG_SCALE_HEATMAP,
-                 control_spacers=CONTROL_SPACERS)
+                 CONTROL_SPACERS,
+                 pam1_nucleotide_rank=PAM1_NT_RANK,
+                 pam2_nucleotide_rank=PAM2_NT_RANK,
+                 pam1_index_rank=PAM1_INDEX_RANK,
+                 pam2_index_rank=PAM2_INDEX_RANK,
+                 avg_spacer=AVERAGE_SPACER,
+                 heatmap_fixed_min=HEATMAP_FIXED_MIN,
+                 heatmap_fixed_max=HEATMAP_FIXED_MAX,
+                 log_scale_heatmap=LOG_SCALE_HEATMAP
+                 )
+
+

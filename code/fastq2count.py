@@ -46,7 +46,6 @@ def fastq2count(run_name,
 
     store_all_data = {}
     store_all_control_data = {}
-    norm_counts_scale = {}
 
 
     for sample in variant_ids['sample']:
@@ -71,71 +70,67 @@ def fastq2count(run_name,
         except:
             continue
 
-        if fastqR1.endswith('.gz'):
-            infileR1 = gzip.open(fastqR1, 'rt')
-            infileR2 = gzip.open(fastqR2, 'rt')
-        else:
-            infileR1 = open(fastqR1, 'r')
-            infileR2 = open(fastqR2, 'r')
+        if not fastqR1.endswith('.gz') or not fastqR2.endswith('.gz'):
+            print("Input fastqs should be gzipped.")
+            quit()
+
 
         wrong_barcode = 0
         wrong_spacer = 0
         total_reads = 0
         counted_reads = 0
-        level1 = 0
-        level2 = 0
-        level1rc = 0
-        level2rc = 0
 
-        while infileR1.readline() and infileR2.readline():
-            read_sequenceR1 = infileR1.readline().strip()
-            infileR1.readline()
-            infileR1.readline()
-            read_sequenceR2 = infileR2.readline().strip()
-            infileR2.readline()
-            infileR2.readline()
+        with gzip.open(fastqR1, 'rt') as infileR1, gzip.open(fastqR2, 'rt') as infileR2:
+            while infileR1.readline() and infileR2.readline():
+                read_sequenceR1 = infileR1.readline().strip()
+                infileR1.readline()
+                infileR1.readline()
+                read_sequenceR2 = infileR2.readline().strip()
+                infileR2.readline()
+                infileR2.readline()
 
-            total_reads += 1
+                total_reads += 1
 
-            top_read, bot_read, spacer, spacer_loc, P5_sample_BC, P7_sample_BC = \
-                find_BCs_and_spacer(spacers, control_spacers, read_sequenceR1, read_sequenceR2,
-                                    P5_sample_BC_start, P5_sample_BC_len,
-                                    P7_sample_BC_start, P7_sample_BC_len)
+                top_read, bot_read, spacer, spacer_loc, P5_sample_BC, P7_sample_BC = \
+                    find_BCs_and_spacer(spacers, control_spacers, read_sequenceR1, read_sequenceR2,
+                                        P5_sample_BC_start, P5_sample_BC_len,
+                                        P7_sample_BC_start, P7_sample_BC_len)
 
-            if spacer_loc == -1:
-                wrong_spacer += 1
-                continue
+                if spacer_loc == -1:
+                    wrong_spacer += 1
+                    continue
 
-            if P5_sample_BC in P5_sample_BCs and P7_sample_BC in P7_sample_BCs:
-                barcode_pair = P5_sample_BC + '_' + P7_sample_BC
-                if barcode_pair in variant_dict.keys():
-                    if pam_orientation == 'three_prime':
-                        spacer3p = spacer_loc + len(spacers[spacer])
-                        PAM = top_read[spacer3p: spacer3p + max_pam_len]
-                        try:
-                            store_all_data[variant_dict[barcode_pair]][spacer][PAM][timepoint] += 1
-                            counted_reads += 1
-                        except:
-                            try: # try to see if it goes in the control dictionary if there is not a key for it in the all_data dictionary
-                                store_all_control_data[variant_dict[barcode_pair]][spacer]["fixed"][timepoint] += 1
-                                counted_reads += 1
-                            except:
-                                pass
-                    elif pam_orientation == 'five_prime':
-                        PAM = top_read[spacer_loc - max_pam_len: spacer_loc]
-                        try:
-                            store_all_data[variant_dict[barcode_pair]][spacer][PAM][timepoint] += 1
-                            counted_reads += 1
-                        except:
+                if P5_sample_BC in P5_sample_BCs and P7_sample_BC in P7_sample_BCs:
+                    barcode_pair = P5_sample_BC + '_' + P7_sample_BC
+                    if barcode_pair in variant_dict.keys():
+                        if pam_orientation == 'three_prime':
+                            spacer3p = spacer_loc + len(spacers[spacer])
+                            PAM = top_read[spacer3p: spacer3p + max_pam_len]
                             try:
-                                store_all_control_data[variant_dict[barcode_pair]][spacer]["fixed"][timepoint] += 1
+                                store_all_data[variant_dict[barcode_pair]][spacer][PAM][timepoint] += 1
                                 counted_reads += 1
                             except:
-                                pass
-            else:
-                wrong_barcode += 1
+                                try: # try to see if it goes in the control dictionary if there is not a key for it in the all_data dictionary
+                                    store_all_control_data[variant_dict[barcode_pair]][spacer]["fixed"][timepoint] += 1
+                                    counted_reads += 1
+                                except:
+                                    pass
+                        elif pam_orientation == 'five_prime':
+                            PAM = top_read[spacer_loc - max_pam_len: spacer_loc]
+                            try:
+                                store_all_data[variant_dict[barcode_pair]][spacer][PAM][timepoint] += 1
+                                counted_reads += 1
+                            except:
+                                try:
+                                    store_all_control_data[variant_dict[barcode_pair]][spacer]["fixed"][timepoint] += 1
+                                    counted_reads += 1
+                                except:
+                                    pass
+                else:
+                    wrong_barcode += 1
 
-            pbar2.update()
+                if total_reads//1000 == 0:
+                    pbar2.update()
 
         pbar2.reset()
         pbar1.update()

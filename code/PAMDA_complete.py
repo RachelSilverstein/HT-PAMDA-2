@@ -118,20 +118,22 @@ def PAMDA_complete(RUN_NAME,
     print('FINISHED: calculate rates from normalized counts \n')
 
     print('BEGIN: plot heat maps')
+    print("CONTROL SPACERS in pamda complete:", CONTROL_SPACERS) # delete later
     rate2heatmap(RUN_NAME,
                  BARCODE_CSV,
                  PAM_LENGTH,
                  PAM_START,
                  SPACERS,
-                 PAM1_NT_RANK,
-                 PAM2_NT_RANK,
-                 PAM1_INDEX_RANK,
-                 PAM2_INDEX_RANK,
-                 AVERAGE_SPACER,
-                 HEATMAP_FIXED_MIN,
-                 HEATMAP_FIXED_MAX,
-                 LOG_SCALE_HEATMAP,
-                 control_spacers=CONTROL_SPACERS)
+                 CONTROL_SPACERS,
+                 pam1_nucleotide_rank=PAM1_NT_RANK,
+                 pam2_nucleotide_rank=PAM2_NT_RANK,
+                 pam1_index_rank=PAM1_INDEX_RANK,
+                 pam2_index_rank=PAM2_INDEX_RANK,
+                 avg_spacer=AVERAGE_SPACER,
+                 heatmap_fixed_min=HEATMAP_FIXED_MIN,
+                 heatmap_fixed_max=HEATMAP_FIXED_MAX,
+                 log_scale_heatmap=LOG_SCALE_HEATMAP
+                 )
     print('FINISHED: plot heat maps')
 
     print(" _______  _______  __   __  ______   _______ ")
