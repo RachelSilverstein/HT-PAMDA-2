@@ -78,8 +78,7 @@ def rawcount2normcount(run_name,
 
     # choose control PAMs for each sample (most enriched ones or designated control spacers)
     # correct for increased counts in later timepoints
-    if top_n > 0: # do not perform uptrend corrections if the top n is set to 0
-        df_input = correct_uptrends(df_input, spacers, control_spacers, timepoints, run_name, pam_start, pam_length, top_n)
+    df_input = correct_uptrends(df_input, spacers, control_spacers, timepoints, run_name, pam_start, pam_length, top_n)
 
     # normalizing read counts
     df_input = norm_to_t0_abundance(df_input, timepoints)

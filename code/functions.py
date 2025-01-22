@@ -255,50 +255,63 @@ def correct_uptrends(input_df, spacers, control_spacers, timepoints, run_name, p
     # make a copy
     output_df = input_df.copy(deep=True)
 
-    # df of just the control spacers so that we can calculate the increases for these
-    if control_spacers is not None:
-        sel = np.isin(output_df["PAM"], list(control_spacers.keys()))
-        control_df = output_df.loc[sel, :].copy(deep=True) # copy to avoid setting values on slice warnings
-
-    else:
-        control_df = make_control_df(input_df, spacers, timepoints, top_n) # choose least cleaved PAMs to use as controls
-
-    if not os.path.exists('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length)):
-        os.makedirs('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length))
-    control_df.to_csv('output/%s/PAM_start_%s_length_%s/control_targets.csv' %
-                               (run_name, pam_start, pam_length), index=True)
-
-    print("normalizing read counts")
-
-    # initialize new columns
-    correction_colnames = []
-    for i in range(len(timepoints)):
-        new = "Correction_Factor_" + str(i)
-        control_df.loc[:, new] = np.zeros(len(control_df))
-        correction_colnames.append(new)
-
     fract_column_names = []
     for i in range(len(timepoints)):
         col = "Fractional_Counts_" + str(i)
         fract_column_names.append(col)
 
-    # calculate median increase factors for the controls since TP0
-    for i in range(len(timepoints)):
-        control_df["Correction_Factor_" + str(i)] = control_df["Fractional_Counts_" + str(i)] / control_df["Fractional_Counts_0"] # increase factor since t0
-    control_df = control_df.groupby(by=["Sample", "Spacer"]).median(numeric_only=True)
-    correction_factors_df = control_df[correction_colnames]
+    # df of just the control spacers so that we can calculate the increases for these
+    if control_spacers is not None:
+        sel = np.isin(output_df["PAM"], list(control_spacers.keys()))
+        control_df = output_df.loc[sel, :].copy(deep=True) # copy to avoid setting values on slice warnings
 
-    if not os.path.exists('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length)):
-        os.makedirs('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length))
-    correction_factors_df.to_csv('output/%s/PAM_start_%s_length_%s/count_correction_factors.csv' %
-              (run_name, pam_start, pam_length), index=True)
+    elif top_n > 0:
+        control_df = make_control_df(input_df, spacers, timepoints, top_n) # choose least cleaved PAMs to use as controls
+
+
+    if top_n > 0:
+
+        if not os.path.exists('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length)):
+            os.makedirs('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length))
+        control_df.to_csv('output/%s/PAM_start_%s_length_%s/control_targets.csv' %
+                          (run_name, pam_start, pam_length), index=True)
+
+        print("normalizing read counts")
+
+        # initialize new columns
+        correction_colnames = []
+        for i in range(len(timepoints)):
+            new = "Correction_Factor_" + str(i)
+            control_df.loc[:, new] = np.zeros(len(control_df))
+            correction_colnames.append(new)
+
+        # calculate median increase factors for the controls since TP0
+        for i in range(len(timepoints)):
+            control_df["Correction_Factor_" + str(i)] = control_df["Fractional_Counts_" + str(i)] / control_df["Fractional_Counts_0"] # increase factor since t0
+        control_df = control_df.groupby(by=["Sample", "Spacer"]).median(numeric_only=True)
+        correction_factors_df = control_df[correction_colnames]
+
+        if not os.path.exists('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length)):
+            os.makedirs('output/%s/PAM_start_%s_length_%s' % (run_name, pam_start, pam_length))
+        correction_factors_df.to_csv('output/%s/PAM_start_%s_length_%s/count_correction_factors.csv' %
+                                     (run_name, pam_start, pam_length), index=True)
+
+    # initialize new columns
+    corrected_fract_column_names = []
+    for i in range(len(timepoints)):
+        new = "Corrected_Fractional_Counts_" + str(i)
+        output_df.loc[:, new] = np.zeros(len(output_df))
+        corrected_fract_column_names.append(new)
 
     # divide by the correction factors
     for index, row in output_df.iterrows():
         sample = row.loc["Sample"]
         spacer = row.loc["Spacer"]
-        correction_factors = list(correction_factors_df.loc[(sample, spacer), :])
-        output_df.loc[index, fract_column_names] = np.divide(output_df.loc[index, fract_column_names], correction_factors)
+        if top_n > 0:
+            correction_factors = list(correction_factors_df.loc[(sample, spacer), :])
+            output_df.loc[index, corrected_fract_column_names] = list(np.divide(output_df.loc[index, fract_column_names], correction_factors))
+        else:
+            output_df.loc[index, corrected_fract_column_names] = list(output_df.loc[index, fract_column_names])
     return output_df
 
 
@@ -309,10 +322,10 @@ def norm_to_t0_abundance(input_df, timepoints):
     # make a copy
     output_df = input_df.copy(deep=True)
 
-    fract_column_names = []
+    corrected_fract_column_names = []
     for i in range(len(timepoints)):
-        col = "Fractional_Counts_" + str(i)
-        fract_column_names.append(col)
+        col = "Corrected_Fractional_Counts_" + str(i)
+        corrected_fract_column_names.append(col)
 
     norm_column_names = []
     for i in range(len(timepoints)):
@@ -321,8 +334,8 @@ def norm_to_t0_abundance(input_df, timepoints):
         output_df[col] = np.zeros(len(output_df))
 
     for i in range(len(timepoints)):
-        output_df["Norm_Counts_" + str(i)] = np.divide(output_df["Fractional_Counts_" + str(i)],
-                                                       output_df["Fractional_Counts_0"])
+        output_df["Norm_Counts_" + str(i)] = np.divide(output_df["Corrected_Fractional_Counts_" + str(i)],
+                                                       output_df["Corrected_Fractional_Counts_0"])
 
     return output_df
 
