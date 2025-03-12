@@ -51,8 +51,10 @@ def rawcount2normcount(run_name,
 
     if control_rawcount_csv is not None:
         df_control = pd.read_csv(control_rawcount_csv)
+        df_control = df_control.loc[df_control['Sample'] == control_sample, :]  # get rid of any other samples that are in there
         df_input = pd.concat([df_input, df_control], sort=False)
-        control_sample_timepoint_fastq = 1
+        if control_sample_timepoint_fastq is None:
+            control_sample_timepoint_fastq = 1
 
     df_input.reset_index(inplace=True, drop=True)
 
